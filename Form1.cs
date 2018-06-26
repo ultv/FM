@@ -21,7 +21,9 @@ namespace FM
         /// <summary>
         /// ЯндексМузыка.
         /// </summary>
-        //readonly string url = "https://music.yandex.ru/genres";                
+        readonly static string urlYandexSound = "https://music.yandex.ru/genres";
+        List<IWebElement> catalogCategoryYS;
+        List<IWebElement> catalogTrackNameYS;
         By LinkRun = By.LinkText("Бег");
         By LinkAllTrack = By.LinkText("Все треки");        
         By LinkTrackName = By.CssSelector(".d-track__name a");
@@ -30,14 +32,16 @@ namespace FM
         /// <summary>
         /// Музофон.
         /// </summary>
-        readonly string url = "https://muzofond.org/";
-        List<IWebElement> catalogCategory;
+        readonly static string urlMuzofon = "https://muzofond.org/";
+        List<IWebElement> catalogCategoryMF;
         List<IWebElement> catalogTrackName;
         List<IWebElement> catalogIconPlay;
         List<IWebElement> catalogIconDownload;
         By LinkSportMusic = By.LinkText("Спортивная музыка");
         //By LinkSportMusic = By.CssSelector(".module-collections a");
         By LinkCatalogSportMusic = By.CssSelector(".module-layout a");
+
+        string url = urlYandexSound;
 
 
         By LinkMeditationMusic = By.LinkText("Музыка Для Медитации");        
@@ -56,17 +60,25 @@ namespace FM
 
         public Form1()
         {
-            InitializeComponent();
+            InitializeComponent();            
         }
 
         private void buttonSearch_Click(object sender, EventArgs e)
         {
+            comboBoxCategorySound.Text = "";
+            comboBoxCategorySound.Items.Clear();
+
             OpenBrowser(url);
 
-            //SelectYandexSound();
-            SelectMuzoFon();
-            
-            
+            if(radioButtonYandexSound.Checked)
+            {
+                SelectYandexSound();
+            }
+            else
+            {
+                SelectMuzoFon();
+            }
+                                    
             //this.Activate();
             //browser.Manage().Window.Minimize();
         }
@@ -76,15 +88,16 @@ namespace FM
         /// </summary>
         private void SelectYandexSound()
         {
-            ((IJavaScriptExecutor)browser).ExecuteScript("arguments[0].scrollIntoView();", browser.FindElement(LinkRun));
-            browser.FindElement(LinkRun).Click();
+            //((IJavaScriptExecutor)browser).ExecuteScript("arguments[0].scrollIntoView();", browser.FindElement(LinkRun));
+            //browser.FindElement(LinkRun).Click();
 
-            ((IJavaScriptExecutor)browser).ExecuteScript("arguments[0].scrollIntoView();", browser.FindElement(LinkAllTrack));
-            browser.FindElement(LinkAllTrack).Click();
+            //((IJavaScriptExecutor)browser).ExecuteScript("arguments[0].scrollIntoView();", browser.FindElement(LinkAllTrack));
+            //browser.FindElement(LinkAllTrack).Click();
 
-            //WebDriverWait browserWait = new WebDriverWait(browser, TimeSpan.FromSeconds(15));
-            //IWebElement LinkTrackNameWait = browserWait.Until(ExpectedConditions.ElementIsVisible(LinkTrackName));
+            ////WebDriverWait browserWait = new WebDriverWait(browser, TimeSpan.FromSeconds(15));
+            ////IWebElement LinkTrackNameWait = browserWait.Until(ExpectedConditions.ElementIsVisible(LinkTrackName));
 
+            /*
             List<IWebElement> catalogTrack = browser.FindElements(LinkTrackName).ToList();
             List<IWebElement> catalogTrackDuration = browser.FindElements(TxtTrackDuration).ToList();
 
@@ -106,6 +119,18 @@ namespace FM
                     richTextBoxTrackDuration.AppendText("\n");
                 }
             }
+            */
+
+            
+
+            catalogCategoryYS = browser.FindElements(By.CssSelector(".page-main__metatags-line a")).ToList();            
+
+            foreach (IWebElement element in catalogCategoryYS)
+            {
+                comboBoxCategorySound.Items.Add(element.Text);
+            }
+
+
         }
 
         /// <summary>
@@ -138,11 +163,11 @@ namespace FM
 
             browser.FindElement(LinkSportMusic).Click();
            
-            catalogCategory = browser.FindElements(LinkCatalogSportMusic).ToList();
+            catalogCategoryMF = browser.FindElements(LinkCatalogSportMusic).ToList();
 
             //comboBoxCategorySound.DataSource = catalogCategory; 
 
-            foreach(IWebElement element in catalogCategory)
+            foreach(IWebElement element in catalogCategoryMF)
             {
                 comboBoxCategorySound.Items.Add(element.Text);
             }
@@ -187,7 +212,28 @@ namespace FM
             int num = Int32.Parse(button.Name);
             browser.Navigate().GoToUrl(catalogIconDownload[num].GetAttribute("href"));
 
+        }
 
+
+        private void buttonDownload_ClickYS(object sender, EventArgs e)
+        {
+            ///////// browser.FindElement(IconDownload).Click();
+
+            Button button = (Button)sender;
+
+            int num = Int32.Parse(button.Name);
+            //browser.Navigate().GoToUrl(catalogIconDownload[num].GetAttribute("href"));
+            string loadUrl = catalogTrackNameYS[num].GetAttribute("href");
+
+            IWebDriver rusavefromnet = new OpenQA.Selenium.Chrome.ChromeDriver();
+            rusavefromnet.Navigate().GoToUrl("http://ru.savefrom.net");
+
+            rusavefromnet.FindElement(By.Id("sf_url")).SendKeys(loadUrl + OpenQA.Selenium.Keys.Enter);
+
+            rusavefromnet.FindElement(By.LinkText("Скачать без установки")).Click();
+
+            System.Threading.Thread.Sleep(3000);
+            rusavefromnet.FindElement(By.ClassName("def-btn-box")).Click();
 
         }
 
@@ -218,13 +264,107 @@ namespace FM
 
         }
 
+        private void linkLabelName_LinkClickedYS(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            LinkLabel link = (LinkLabel)sender;
+
+            //скачивание browser.Navigate().GoToUrl(catalogIconPlay[1].GetAttribute("data-url"));
+
+            for (int i = 0; i < catalogTrackNameYS.Count; i++)
+            {
+                if (catalogTrackNameYS[i].Text == link.Text)
+                {
+                   browser.FindElement(By.CssSelector("")).Click();
+                                                         
+                    break;
+                }
+            }
+
+        }
+
         private void buttonCreatePlaylist_Click(object sender, EventArgs e)
         {
-            for (int i = 0; i < catalogCategory.Count; i++)
+            if (radioButtonYandexSound.Checked)
             {
-                if (catalogCategory[i].Text == comboBoxCategorySound.Text)
+                CreatePlaylistYandexSound();
+            }
+            else
+            {
+                CreatePlaylistMuzoFon();
+            }
+
+        }
+
+        private void CreatePlaylistYandexSound()
+        {
+            for (int i = 0; i < catalogCategoryYS.Count; i++)
+            {
+                if (catalogCategoryYS[i].Text == comboBoxCategorySound.Text)
                 {
-                    browser.Navigate().GoToUrl(catalogCategory[i].GetAttribute("href"));                    
+                    browser.Navigate().GoToUrl(catalogCategoryYS[i].GetAttribute("href"));
+                    break;
+                }
+            }
+
+            List<IWebElement>  catalogIconPlayYS = browser.FindElements(By.CssSelector(".d-track__cover img")).ToList();            
+            List<IWebElement> catalogTrackArtistYS = browser.FindElements(By.CssSelector(".d-track__artists a")).ToList();
+            catalogTrackNameYS = browser.FindElements(By.CssSelector(".d-track__name a")).ToList();
+            //List<IWebElement> catalogTrackDurationYS = browser.FindElements().ToList();
+
+
+            int distanceTop = 40;
+
+            for (int i = 0; i < catalogTrackNameYS.Count; i++)
+            {
+
+                Label labelNum = new Label();
+                labelNum.Width = 20;
+                labelNum.Left = 10;
+                labelNum.Top = 10 + i * distanceTop;
+                labelNum.Text = (i + 1).ToString() + ".";
+                panelPlayList.Controls.Add(labelNum);
+
+                Label labelArtist = new Label();
+                labelArtist.Left = 30;
+                labelArtist.Top = 10 + i * distanceTop;
+                labelArtist.Text = catalogTrackArtistYS[i].Text;
+                panelPlayList.Controls.Add(labelArtist);
+
+                Label labelName = new Label();
+                labelName.Left = 200;
+                labelName.Top = 10 + i * distanceTop;
+                labelName.Text = catalogTrackNameYS[i].Text;
+              //  labelName.LinkClicked += linkLabelName_LinkClickedYS;
+                panelPlayList.Controls.Add(labelName);
+
+                Button buttonDownload = new Button();
+                buttonDownload.Name = i.ToString();
+                buttonDownload.Left = 400;
+                buttonDownload.Top = 10 + i * distanceTop;
+                buttonDownload.Text = "Скачать";
+                buttonDownload.Click += buttonDownload_ClickYS;
+                panelPlayList.Controls.Add(buttonDownload);
+
+                Button buttonAddedForPlayList = new Button();
+                buttonAddedForPlayList.Width = 200;
+                buttonAddedForPlayList.Left = 500;
+                buttonAddedForPlayList.Top = 10 + i * distanceTop;
+                buttonAddedForPlayList.Text = "Добавить в Плейлист";
+                panelPlayList.Controls.Add(buttonAddedForPlayList);
+                buttonAddedForPlayList.Enabled = false;
+
+
+            }
+
+        }
+
+        private void CreatePlaylistMuzoFon()
+        {
+            for (int i = 0; i < catalogCategoryMF.Count; i++)
+            {
+                if (catalogCategoryMF[i].Text == comboBoxCategorySound.Text)
+                {
+                    browser.Navigate().GoToUrl(catalogCategoryMF[i].GetAttribute("href"));
                     break;
                 }
             }
@@ -239,7 +379,7 @@ namespace FM
 
             int distanceTop = 40;
 
-            for(int i = 0; i < catalogTrackArtist.Count; i++)
+            for (int i = 0; i < catalogTrackArtist.Count; i++)
             {
 
                 Label labelNum = new Label();
@@ -276,15 +416,38 @@ namespace FM
                 buttonAddedForPlayList.Top = 10 + i * distanceTop;
                 buttonAddedForPlayList.Text = "Добавить в Плейлист";
                 panelPlayList.Controls.Add(buttonAddedForPlayList);
+                buttonAddedForPlayList.Enabled = false;
 
 
-            }           
-
+            }
         }
 
-        
+        private void radioButtonMuzoFon_CheckedChanged(object sender, EventArgs e)
+        {
+            RadioButton radioButton = (RadioButton)sender;
 
+            if(radioButton.Checked)
+            {
+                url = urlMuzofon;
+            }
+            else
+            {
+                url = urlYandexSound;
+            }
+        }
 
+        private void radioButtonYandexSound_CheckedChanged(object sender, EventArgs e)
+        {
+            RadioButton radioButton = (RadioButton)sender;
 
+            if (radioButton.Checked)
+            {
+                url = urlYandexSound;
+            }
+            else
+            {
+                url = urlMuzofon;
+            }
+        }
     }
 }
