@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System.Runtime.InteropServices;
+using FM.pages;
 
 
 namespace FM
@@ -24,7 +25,10 @@ namespace FM
         /// ЯндексМузыка.
         /// </summary>
         IWebDriver audioConverter;
-        IWebDriver rusavefromnet;
+
+        IWebDriver ruSaveFromNet;
+        PageHomeSaveFromNet pageHomeSaveFromNet;
+
         readonly static string urlYandexSound = "https://music.yandex.ru/genres";
         List<IWebElement> catalogCategoryYS;
         List<IWebElement> catalogTrackNameYS;
@@ -218,9 +222,9 @@ namespace FM
             {
                 browser.Quit();
             }
-            if (rusavefromnet != null)
+            if (pageHomeSaveFromNet != null)
             {
-                rusavefromnet.Quit();
+                pageHomeSaveFromNet.browser.Quit();
             }
             if (audioConverter != null)
             {
@@ -247,50 +251,62 @@ namespace FM
 
         private void buttonDownload_ClickYS(object sender, EventArgs e)
         {
-            ///////// browser.FindElement(IconDownload).Click();
-
+           
             Button button = (Button)sender;
 
             int num = Int32.Parse(button.Name);
             //browser.Navigate().GoToUrl(catalogIconDownload[num].GetAttribute("href"));
             string loadUrl = catalogTrackNameYS[num].GetAttribute("href");
 
-            rusavefromnet = new OpenQA.Selenium.Chrome.ChromeDriver();
-            rusavefromnet.Navigate().GoToUrl("http://ru.savefrom.net");
-            rusavefromnet.Manage().Window.Maximize();
+            ruSaveFromNet = new OpenQA.Selenium.Chrome.ChromeDriver();
+            ruSaveFromNet.Navigate().GoToUrl("http://ru.savefrom.net");
+            ruSaveFromNet.Manage().Window.Maximize();
 
-            rusavefromnet.FindElement(By.Id("sf_url")).SendKeys(loadUrl + OpenQA.Selenium.Keys.Enter);
+            pageHomeSaveFromNet = PageHomeSaveFromNet.Create(ruSaveFromNet);
+            pageHomeSaveFromNet.InputSearch.SendKeys(loadUrl + OpenQA.Selenium.Keys.Enter);           
+            pageHomeSaveFromNet.LinkDownloadNoInst.Click();            
+            pageHomeSaveFromNet.IconSelectFormat.Click();
 
-            rusavefromnet.FindElement(By.LinkText("Скачать без установки")).Click();
-
-            System.Threading.Thread.Sleep(5000);
-            rusavefromnet.FindElement(By.ClassName("def-btn-box")).Click();
-
-
-            //другой файл
-            audioConverter = new OpenQA.Selenium.Chrome.ChromeDriver();
-            audioConverter.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(15);
-            audioConverter.Manage().Window.Maximize();
-
-            audioConverter.Navigate().GoToUrl("https://online-audio-converter.com/ru/");
-
-            audioConverter.FindElement(By.CssSelector(".uploader_state_default a")).Click();
-
-
-            System.Threading.Thread.Sleep(5000);
-            IntPtr hWnd = FindWindow(null, "Открыть");
-            if (hWnd == IntPtr.Zero)
+            if(button.Text == "MP4")
             {
-                MessageBox.Show("Not found main", "Error");
-                return;
+                pageHomeSaveFromNet.ListFileFormat[0].Click();
             }
+            else if (button.Text == "3GP")
+            {
+                pageHomeSaveFromNet.ListFileFormat[3].Click();
+            }
+            else if (button.Text == "MP3")
+            {
+                
+                pageHomeSaveFromNet.ButtonDowmload.Click();
 
-            System.Threading.Thread.Sleep(3000);
-            IntPtr t1 = (IntPtr)System.Windows.Forms.Keys.Escape;
-            IntPtr nul = IntPtr.Zero;
-            PostMessage(hWnd, WM_KEYUP, t1, nul);
-            PostMessage(hWnd, WM_KEYDOWN, t1, nul);
-        }
+                //другой файл
+                audioConverter = new OpenQA.Selenium.Chrome.ChromeDriver();
+                audioConverter.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(15);
+                audioConverter.Manage().Window.Maximize();
+
+                audioConverter.Navigate().GoToUrl("https://online-audio-converter.com/ru/");
+
+                audioConverter.FindElement(By.CssSelector(".uploader_state_default a")).Click();
+
+
+                System.Threading.Thread.Sleep(5000);
+                IntPtr hWnd = FindWindow(null, "Открыть");
+                if (hWnd == IntPtr.Zero)
+                {
+                    MessageBox.Show("Not found main", "Error");
+                    return;
+                }
+
+                System.Threading.Thread.Sleep(3000);
+                IntPtr t1 = (IntPtr)System.Windows.Forms.Keys.Escape;
+                IntPtr nul = IntPtr.Zero;
+                PostMessage(hWnd, WM_KEYUP, t1, nul);
+                PostMessage(hWnd, WM_KEYDOWN, t1, nul);
+
+            }
+            
+        }        
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
@@ -391,20 +407,39 @@ namespace FM
                 labelName.Left = 200;
                 labelName.Top = 10 + i * distanceTop;
                 labelName.Text = catalogTrackNameYS[i].Text;
-              //  labelName.LinkClicked += linkLabelName_LinkClickedYS;
+                //labelName.LinkClicked += linkLabelName_LinkClickedYS;
                 panelPlayList.Controls.Add(labelName);
 
-                Button buttonDownload = new Button();
-                buttonDownload.Name = i.ToString();
-                buttonDownload.Left = 400;
-                buttonDownload.Top = 10 + i * distanceTop;
-                buttonDownload.Text = "Скачать";
-                buttonDownload.Click += buttonDownload_ClickYS;
-                panelPlayList.Controls.Add(buttonDownload);
+                Button buttonDownloadMP4 = new Button();
+                buttonDownloadMP4.Name = i.ToString();
+                buttonDownloadMP4.Width = 40;
+                buttonDownloadMP4.Left = 400;
+                buttonDownloadMP4.Top = 10 + i * distanceTop;
+                buttonDownloadMP4.Text = "MP4";
+                buttonDownloadMP4.Click += buttonDownload_ClickYS;
+                panelPlayList.Controls.Add(buttonDownloadMP4);
+
+                Button buttonDownload3GP = new Button();
+                buttonDownload3GP.Name = i.ToString();
+                buttonDownload3GP.Width = 40;
+                buttonDownload3GP.Left = 450;
+                buttonDownload3GP.Top = 10 + i * distanceTop;
+                buttonDownload3GP.Text = "3GP";
+                buttonDownload3GP.Click += buttonDownload_ClickYS;
+                panelPlayList.Controls.Add(buttonDownload3GP);
+
+                Button buttonDownloadMP3 = new Button();
+                buttonDownloadMP3.Name = i.ToString();
+                buttonDownloadMP3.Width = 40;
+                buttonDownloadMP3.Left = 500;
+                buttonDownloadMP3.Top = 10 + i * distanceTop;
+                buttonDownloadMP3.Text = "MP3";
+                buttonDownloadMP3.Click += buttonDownload_ClickYS;
+                panelPlayList.Controls.Add(buttonDownloadMP3);
 
                 Button buttonAddedForPlayList = new Button();
-                buttonAddedForPlayList.Width = 200;
-                buttonAddedForPlayList.Left = 500;
+                buttonAddedForPlayList.Width = 160;
+                buttonAddedForPlayList.Left = 550;
                 buttonAddedForPlayList.Top = 10 + i * distanceTop;
                 buttonAddedForPlayList.Text = "Добавить в Плейлист";
                 panelPlayList.Controls.Add(buttonAddedForPlayList);
