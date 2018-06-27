@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using System.Runtime.InteropServices;
+
 
 namespace FM
 {
@@ -21,6 +23,8 @@ namespace FM
         /// <summary>
         /// ЯндексМузыка.
         /// </summary>
+        IWebDriver audioConverter;
+        IWebDriver rusavefromnet;
         readonly static string urlYandexSound = "https://music.yandex.ru/genres";
         List<IWebElement> catalogCategoryYS;
         List<IWebElement> catalogTrackNameYS;
@@ -28,6 +32,14 @@ namespace FM
         By LinkAllTrack = By.LinkText("Все треки");        
         By LinkTrackName = By.CssSelector(".d-track__name a");
         By TxtTrackDuration = By.CssSelector(".d-track__info span");
+
+        [DllImport("user32.dll", EntryPoint = "FindWindow")]
+        private static extern IntPtr FindWindow(string _ClassName, string _WindowName);
+        const int WM_KEYDOWN = 256;
+        const int WM_KEYUP = 257;
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern int PostMessage(IntPtr hwnd, int wMsg, IntPtr wParam, IntPtr lParam);
+
 
         /// <summary>
         /// Музофон.
@@ -206,6 +218,14 @@ namespace FM
             {
                 browser.Quit();
             }
+            if (rusavefromnet != null)
+            {
+                rusavefromnet.Quit();
+            }
+            if (audioConverter != null)
+            {
+                audioConverter.Quit();
+            }
         }
 
         private void richTextBox1_LinkClicked(object sender, LinkClickedEventArgs e)
@@ -235,16 +255,41 @@ namespace FM
             //browser.Navigate().GoToUrl(catalogIconDownload[num].GetAttribute("href"));
             string loadUrl = catalogTrackNameYS[num].GetAttribute("href");
 
-            IWebDriver rusavefromnet = new OpenQA.Selenium.Chrome.ChromeDriver();
+            rusavefromnet = new OpenQA.Selenium.Chrome.ChromeDriver();
             rusavefromnet.Navigate().GoToUrl("http://ru.savefrom.net");
+            rusavefromnet.Manage().Window.Maximize();
 
             rusavefromnet.FindElement(By.Id("sf_url")).SendKeys(loadUrl + OpenQA.Selenium.Keys.Enter);
 
             rusavefromnet.FindElement(By.LinkText("Скачать без установки")).Click();
 
-            System.Threading.Thread.Sleep(3000);
+            System.Threading.Thread.Sleep(5000);
             rusavefromnet.FindElement(By.ClassName("def-btn-box")).Click();
 
+
+            //другой файл
+            audioConverter = new OpenQA.Selenium.Chrome.ChromeDriver();
+            audioConverter.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(15);
+            audioConverter.Manage().Window.Maximize();
+
+            audioConverter.Navigate().GoToUrl("https://online-audio-converter.com/ru/");
+
+            audioConverter.FindElement(By.CssSelector(".uploader_state_default a")).Click();
+
+
+            System.Threading.Thread.Sleep(5000);
+            IntPtr hWnd = FindWindow(null, "Открыть");
+            if (hWnd == IntPtr.Zero)
+            {
+                MessageBox.Show("Not found main", "Error");
+                return;
+            }
+
+            System.Threading.Thread.Sleep(3000);
+            IntPtr t1 = (IntPtr)System.Windows.Forms.Keys.Escape;
+            IntPtr nul = IntPtr.Zero;
+            PostMessage(hWnd, WM_KEYUP, t1, nul);
+            PostMessage(hWnd, WM_KEYDOWN, t1, nul);
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

@@ -124,7 +124,7 @@
             this.Controls.Add(this.comboBoxCategorySound);
             this.Controls.Add(this.buttonSearch);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Музыка для спорта";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
