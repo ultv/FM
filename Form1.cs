@@ -79,8 +79,8 @@ namespace FM
                 SelectMuzoFon();
             }
                                     
-            //this.Activate();
-            //browser.Manage().Window.Minimize();
+            this.Activate();
+            browser.Manage().Window.Minimize();
         }
 
         /// <summary>
@@ -130,6 +130,11 @@ namespace FM
                 comboBoxCategorySound.Items.Add(element.Text);
             }
 
+            comboBoxCategorySound.Text = catalogCategoryYS[0].Text;
+            comboBoxCategorySound.Enabled = true;
+            buttonSearch.Enabled = false;
+            buttonCreatePlaylist.Enabled = true;
+
 
         }
 
@@ -171,6 +176,11 @@ namespace FM
             {
                 comboBoxCategorySound.Items.Add(element.Text);
             }
+
+            comboBoxCategorySound.Text = catalogCategoryMF[0].Text;
+            comboBoxCategorySound.Enabled = true;
+            buttonSearch.Enabled = false;
+            buttonCreatePlaylist.Enabled = true;
 
         }
 
@@ -287,10 +297,12 @@ namespace FM
             if (radioButtonYandexSound.Checked)
             {
                 CreatePlaylistYandexSound();
+                buttonCreatePlaylist.Enabled = false;
             }
             else
             {
                 CreatePlaylistMuzoFon();
+                 buttonCreatePlaylist.Enabled = false;
             }
 
         }
@@ -426,7 +438,9 @@ namespace FM
         {
             RadioButton radioButton = (RadioButton)sender;
 
-            if(radioButton.Checked)
+            ElementInit();
+
+            if (radioButton.Checked)
             {
                 url = urlMuzofon;
             }
@@ -438,6 +452,8 @@ namespace FM
 
         private void radioButtonYandexSound_CheckedChanged(object sender, EventArgs e)
         {
+            ElementInit();
+
             RadioButton radioButton = (RadioButton)sender;
 
             if (radioButton.Checked)
@@ -448,6 +464,23 @@ namespace FM
             {
                 url = urlMuzofon;
             }
+        }
+
+        private void ElementInit()
+        {
+            panelPlayList.Controls.Clear();
+            comboBoxCategorySound.Items.Clear();
+            comboBoxCategorySound.Text = "";
+            comboBoxCategorySound.Enabled = false;
+            buttonCreatePlaylist.Enabled = false;
+            buttonSearch.Enabled = true;
+        }
+
+        private void comboBoxCategorySound_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ////!!!! перейти на url по comboBox.Text;
+            panelPlayList.Controls.Clear();
+            buttonCreatePlaylist.Enabled = true;
         }
     }
 }
