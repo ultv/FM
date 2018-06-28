@@ -35,11 +35,13 @@
             this.radioButtonYandexSound = new System.Windows.Forms.RadioButton();
             this.radioButtonMuzoFon = new System.Windows.Forms.RadioButton();
             this.comboBoxDuration = new System.Windows.Forms.ComboBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // buttonSearch
             // 
-            this.buttonSearch.Location = new System.Drawing.Point(158, 45);
+            this.buttonSearch.Location = new System.Drawing.Point(454, 12);
             this.buttonSearch.Name = "buttonSearch";
             this.buttonSearch.Size = new System.Drawing.Size(150, 23);
             this.buttonSearch.TabIndex = 0;
@@ -51,16 +53,16 @@
             // 
             this.comboBoxCategorySound.Enabled = false;
             this.comboBoxCategorySound.FormattingEnabled = true;
-            this.comboBoxCategorySound.Location = new System.Drawing.Point(356, 25);
+            this.comboBoxCategorySound.Location = new System.Drawing.Point(382, 60);
             this.comboBoxCategorySound.Name = "comboBoxCategorySound";
-            this.comboBoxCategorySound.Size = new System.Drawing.Size(200, 21);
+            this.comboBoxCategorySound.Size = new System.Drawing.Size(150, 21);
             this.comboBoxCategorySound.TabIndex = 5;
+            this.comboBoxCategorySound.Text = "Настроение";
             this.comboBoxCategorySound.SelectedIndexChanged += new System.EventHandler(this.comboBoxCategorySound_SelectedIndexChanged);
             // 
             // buttonCreatePlaylist
             // 
-            this.buttonCreatePlaylist.Enabled = false;
-            this.buttonCreatePlaylist.Location = new System.Drawing.Point(611, 45);
+            this.buttonCreatePlaylist.Location = new System.Drawing.Point(735, 57);
             this.buttonCreatePlaylist.Name = "buttonCreatePlaylist";
             this.buttonCreatePlaylist.Size = new System.Drawing.Size(150, 23);
             this.buttonCreatePlaylist.TabIndex = 6;
@@ -71,9 +73,9 @@
             // panelPlayList
             // 
             this.panelPlayList.AutoScroll = true;
-            this.panelPlayList.Location = new System.Drawing.Point(12, 109);
+            this.panelPlayList.Location = new System.Drawing.Point(12, 104);
             this.panelPlayList.Name = "panelPlayList";
-            this.panelPlayList.Size = new System.Drawing.Size(776, 317);
+            this.panelPlayList.Size = new System.Drawing.Size(895, 387);
             this.panelPlayList.TabIndex = 7;
             // 
             // radioButtonYandexSound
@@ -92,7 +94,7 @@
             // radioButtonMuzoFon
             // 
             this.radioButtonMuzoFon.AutoSize = true;
-            this.radioButtonMuzoFon.Location = new System.Drawing.Point(24, 65);
+            this.radioButtonMuzoFon.Location = new System.Drawing.Point(155, 26);
             this.radioButtonMuzoFon.Name = "radioButtonMuzoFon";
             this.radioButtonMuzoFon.Size = new System.Drawing.Size(69, 17);
             this.radioButtonMuzoFon.TabIndex = 9;
@@ -105,17 +107,37 @@
             // 
             this.comboBoxDuration.Enabled = false;
             this.comboBoxDuration.FormattingEnabled = true;
-            this.comboBoxDuration.Location = new System.Drawing.Point(356, 61);
+            this.comboBoxDuration.Location = new System.Drawing.Point(552, 59);
             this.comboBoxDuration.Name = "comboBoxDuration";
-            this.comboBoxDuration.Size = new System.Drawing.Size(200, 21);
+            this.comboBoxDuration.Size = new System.Drawing.Size(150, 21);
             this.comboBoxDuration.TabIndex = 10;
-            this.comboBoxDuration.Text = "Любая длительность";
+            this.comboBoxDuration.Text = "Длительность";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(24, 60);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(150, 20);
+            this.textBox1.TabIndex = 11;
+            this.textBox1.Text = "Название";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.Enabled = false;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(201, 59);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(150, 21);
+            this.comboBox1.TabIndex = 13;
+            this.comboBox1.Text = "Жанр";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(919, 503);
+            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.comboBoxDuration);
             this.Controls.Add(this.radioButtonMuzoFon);
             this.Controls.Add(this.radioButtonYandexSound);
@@ -140,6 +162,8 @@
         private System.Windows.Forms.RadioButton radioButtonYandexSound;
         private System.Windows.Forms.RadioButton radioButtonMuzoFon;
         private System.Windows.Forms.ComboBox comboBoxDuration;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }
 

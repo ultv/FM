@@ -21,5 +21,12 @@ namespace FM.pages
         {
             return builder.pageHome;
         }
+
+        public PageHomeSaveFromNetBuilder InitButtonsFormat(string url)
+        {
+
+            
+                return this;
+        }
     }
 }

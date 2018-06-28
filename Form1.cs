@@ -76,9 +76,15 @@ namespace FM
 
         public Form1()
         {
-            InitializeComponent();            
+            InitializeComponent();
+      //      SearchTrack();
         }
 
+        /// <summary>
+        /// К УДАЛЕНИЮ
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonSearch_Click(object sender, EventArgs e)
         {
             comboBoxCategorySound.Text = "";
@@ -95,6 +101,29 @@ namespace FM
                 SelectMuzoFon();
             }
                                     
+            this.Activate();
+            browser.Manage().Window.Minimize();
+        }
+
+        /// <summary>
+        /// Вывод треков.
+        /// </summary>
+        public void SearchTrack()
+        {
+            comboBoxCategorySound.Text = "";
+            comboBoxCategorySound.Items.Clear();
+
+            OpenBrowser(url);
+
+            if (radioButtonYandexSound.Checked)
+            {
+                SelectYandexSound();
+            }
+            else
+            {
+                SelectMuzoFon();
+            }
+
             this.Activate();
             browser.Manage().Window.Minimize();
         }
@@ -158,29 +187,7 @@ namespace FM
         /// Работа с сайтом МузоФон.
         /// </summary>
         private void SelectMuzoFon()
-        {
-            /*
-            ((IJavaScriptExecutor)browser).ExecuteScript("arguments[0].scrollIntoView();", browser.FindElement(LinkSportMusic));
-
-            browser.FindElement(LinkMeditationMusic).Click();
-
-            richTextBoxCatalogTrack.AppendText(browser.FindElement(IconDownload).GetAttribute("href"));
-            linkLabel1.Text = browser.FindElement(TxtArtist).Text;
-            */
-
-
-            /*
-            List<IWebElement> catalogTrack = browser.FindElements(LinkSportMusic).ToList();
-
-            if (catalogTrack.Count > 0)
-            {
-                foreach (IWebElement element in catalogTrack)
-                {
-                    richTextBoxCatalogTrack.AppendText(element.Text + "\n");             
-                    richTextBoxCatalogTrack.AppendText("\n");
-                }
-            }
-            */
+        {            
 
             browser.FindElement(LinkSportMusic).Click();
            
@@ -216,6 +223,11 @@ namespace FM
             browser.Navigate().GoToUrl(url);
         }
 
+        /// <summary>
+        /// Действия по закрытию формы.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (browser != null)
@@ -258,6 +270,7 @@ namespace FM
             //browser.Navigate().GoToUrl(catalogIconDownload[num].GetAttribute("href"));
             string loadUrl = catalogTrackNameYS[num].GetAttribute("href");
 
+            
             ruSaveFromNet = new OpenQA.Selenium.Chrome.ChromeDriver();
             ruSaveFromNet.Navigate().GoToUrl("http://ru.savefrom.net");
             ruSaveFromNet.Manage().Window.Maximize();
@@ -279,6 +292,7 @@ namespace FM
             {
                 
                 pageHomeSaveFromNet.ButtonDowmload.Click();
+            
 
                 //другой файл
                 audioConverter = new OpenQA.Selenium.Chrome.ChromeDriver();
@@ -353,6 +367,11 @@ namespace FM
 
         }
 
+        /// <summary>
+        /// К УДАЛЕНИЮ
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonCreatePlaylist_Click(object sender, EventArgs e)
         {
             if (radioButtonYandexSound.Checked)
@@ -365,6 +384,62 @@ namespace FM
                 CreatePlaylistMuzoFon();
                  buttonCreatePlaylist.Enabled = false;
             }
+
+        }
+
+        /// <summary>
+        /// Вывод треков по изменению критериев поиска.
+        /// </summary>
+        public void ShowTracks()
+        {
+            if (radioButtonYandexSound.Checked)
+            {
+                CreatePlaylistYandexSound();
+                buttonCreatePlaylist.Enabled = false;
+            }
+            else
+            {
+                CreatePlaylistMuzoFon();
+                buttonCreatePlaylist.Enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// Проверка доступных форматов для скачивания с savefromnet.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonFindFormat_Click(object sender, EventArgs e)
+        {
+            Button button = (Button)sender;
+
+            int num = Int32.Parse(button.Name);            
+            string loadUrl = catalogTrackNameYS[num].GetAttribute("href");
+
+            ruSaveFromNet = new OpenQA.Selenium.Chrome.ChromeDriver();
+            ruSaveFromNet.Navigate().GoToUrl("http://ru.savefrom.net");
+            ruSaveFromNet.Manage().Window.Maximize();
+
+            pageHomeSaveFromNet = PageHomeSaveFromNet.Create(ruSaveFromNet);
+            pageHomeSaveFromNet.InputSearch.SendKeys(loadUrl + OpenQA.Selenium.Keys.Enter);
+            pageHomeSaveFromNet.LinkDownloadNoInst.Click();
+            pageHomeSaveFromNet.IconSelectFormat.Click();
+
+            List<IWebElement> listFileFormat =  pageHomeSaveFromNet.ListFileFormat;
+
+            
+            //var comboBox = panelPlayList.Controls.Find("comboBoxFindFormat", false);
+
+            
+            foreach (IWebElement element in listFileFormat)
+            {
+                ComboBox cmb = panelPlayList.Controls["comboBoxFindFormat_" + Int32.Parse(button.Name)] as ComboBox;
+                cmb.Enabled = true;                
+                cmb.Items.Add(element.Text);
+            }
+            
+
+            
 
         }
 
@@ -386,34 +461,57 @@ namespace FM
 
 
             int distanceTop = 40;
+            int distanceElement = 20;
+            int leftLabelNum = 20;
+            int leftButtonPlay = 40;
+            int leftLabelArtist = 150;            
+            int leftLabelTrack = 250;
+            int leftButtonAddedForPlayList = 400;
+            int leftButtonFindFormat = 520;
+            int leftComboBoxFormats = 640;
+            int leftButtonDownload = 760;
+
+
+
 
             for (int i = 0; i < catalogTrackNameYS.Count; i++)
-            {
+            {                
 
                 Label labelNum = new Label();
-                labelNum.Width = 20;
+                labelNum.Width = leftLabelNum;
                 labelNum.Left = 10;
                 labelNum.Top = 10 + i * distanceTop;
                 labelNum.Text = (i + 1).ToString() + ".";
                 panelPlayList.Controls.Add(labelNum);
 
+                Button buttonPlay = new Button();
+                buttonPlay.Name = i.ToString();
+                buttonPlay.Width = 80;
+                buttonPlay.Left = leftButtonPlay;
+                buttonPlay.Top = 10 + i * distanceTop;
+                buttonPlay.Text = "Слушать";
+                //buttonPlay.Click += ;
+                panelPlayList.Controls.Add(buttonPlay);
+
                 Label labelArtist = new Label();
-                labelArtist.Left = 30;
+                labelArtist.Left = leftLabelArtist;
                 labelArtist.Top = 10 + i * distanceTop;
                 labelArtist.Text = catalogTrackArtistYS[i].Text;
                 panelPlayList.Controls.Add(labelArtist);
+                
+                Label labelTrack = new Label();
+                labelTrack.Left = leftLabelTrack;
+                labelTrack.Top = 10 + i * distanceTop;
+                labelTrack.Text = catalogTrackNameYS[i].Text;               
+                panelPlayList.Controls.Add(labelTrack);
 
-                Label labelName = new Label();
-                labelName.Left = 200;
-                labelName.Top = 10 + i * distanceTop;
-                labelName.Text = catalogTrackNameYS[i].Text;
-                //labelName.LinkClicked += linkLabelName_LinkClickedYS;
-                panelPlayList.Controls.Add(labelName);
+                
 
+                /*
                 Button buttonDownloadMP4 = new Button();
                 buttonDownloadMP4.Name = i.ToString();
                 buttonDownloadMP4.Width = 40;
-                buttonDownloadMP4.Left = 400;
+                buttonDownloadMP4.Left = 300;
                 buttonDownloadMP4.Top = 10 + i * distanceTop;
                 buttonDownloadMP4.Text = "MP4";
                 buttonDownloadMP4.Click += buttonDownload_ClickYS;
@@ -422,7 +520,7 @@ namespace FM
                 Button buttonDownload3GP = new Button();
                 buttonDownload3GP.Name = i.ToString();
                 buttonDownload3GP.Width = 40;
-                buttonDownload3GP.Left = 450;
+                buttonDownload3GP.Left = 350;
                 buttonDownload3GP.Top = 10 + i * distanceTop;
                 buttonDownload3GP.Text = "3GP";
                 buttonDownload3GP.Click += buttonDownload_ClickYS;
@@ -431,22 +529,51 @@ namespace FM
                 Button buttonDownloadMP3 = new Button();
                 buttonDownloadMP3.Name = i.ToString();
                 buttonDownloadMP3.Width = 40;
-                buttonDownloadMP3.Left = 500;
+                buttonDownloadMP3.Left = 400;
                 buttonDownloadMP3.Top = 10 + i * distanceTop;
                 buttonDownloadMP3.Text = "MP3";
                 buttonDownloadMP3.Click += buttonDownload_ClickYS;
                 panelPlayList.Controls.Add(buttonDownloadMP3);
+                */
+
 
                 Button buttonAddedForPlayList = new Button();
-                buttonAddedForPlayList.Width = 160;
-                buttonAddedForPlayList.Left = 550;
+                buttonAddedForPlayList.Width = 100;
+                buttonAddedForPlayList.Left = leftButtonAddedForPlayList;
                 buttonAddedForPlayList.Top = 10 + i * distanceTop;
-                buttonAddedForPlayList.Text = "Добавить в Плейлист";
+                buttonAddedForPlayList.Text = "в Плейлист";
                 panelPlayList.Controls.Add(buttonAddedForPlayList);
                 buttonAddedForPlayList.Enabled = false;
 
+                Button buttonFindFormat = new Button();
+                buttonFindFormat.Name = i.ToString();
+                buttonFindFormat.Width = 100;
+                buttonFindFormat.Left = leftButtonFindFormat;
+                buttonFindFormat.Top = 10 + i * distanceTop;
+                buttonFindFormat.Text = "Запросить";
+                panelPlayList.Controls.Add(buttonFindFormat);
+                buttonFindFormat.Click += buttonFindFormat_Click;
+                buttonFindFormat.Enabled = true;
 
-            }
+                ComboBox comboBox = new ComboBox();
+                comboBox.Name = "comboBoxFindFormat_" + i.ToString();
+                comboBox.Width = 100;
+                comboBox.Left = leftComboBoxFormats;
+                comboBox.Top = 10 + i * distanceTop;
+                panelPlayList.Controls.Add(comboBox);
+                comboBox.Enabled = false;
+
+                Button buttonDownload = new Button();
+                buttonDownload.Name = i.ToString();
+                buttonDownload.Width = 100;
+                buttonDownload.Left = leftButtonDownload;
+                buttonDownload.Top = 10 + i * distanceTop;
+                buttonDownload.Text = "Скачать";
+                panelPlayList.Controls.Add(buttonDownload);
+                buttonDownload.Click += buttonDownload_Click;
+                buttonDownload.Enabled = false;
+
+            }            
 
         }
 
@@ -528,6 +655,8 @@ namespace FM
             {
                 url = urlYandexSound;
             }
+
+            SearchTrack();
         }
 
         private void radioButtonYandexSound_CheckedChanged(object sender, EventArgs e)
@@ -544,6 +673,8 @@ namespace FM
             {
                 url = urlMuzofon;
             }
+
+            SearchTrack();
         }
 
         private void ElementInit()
@@ -560,7 +691,8 @@ namespace FM
         {
             ////!!!! перейти на url по comboBox.Text;
             panelPlayList.Controls.Clear();
-            buttonCreatePlaylist.Enabled = true;
+            //buttonCreatePlaylist.Enabled = true;
+            SearchTrack();
         }
     }
 }
