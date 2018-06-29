@@ -341,13 +341,27 @@ namespace FM
             By iconArtistSearch = By.CssSelector(".d-suggest button");
             browser.FindElement(iconArtistSearch).Click();
 
-            //By linkAllTrecksArtist = By.LinkText("Все треки");
-            //By linkAllTrecksArtist = By.CssSelector("body > div.page-root.page-root_no-player > div.centerblock-wrapper > div.centerblock > div > div > div.page-search__switch > nav > a:nth-child(4)");
-            //browser.FindElement(linkAllTrecksArtist).Click();
-            //By linkArtistName = By.CssSelector(".artist__name a");
-            //browser.FindElement(linkArtistName).Click();
 
-            By linkArtistTracks = By.LinkText("Треки");
+            By linkAllTrecksArtist = By.LinkText("Все треки");
+            ((IJavaScriptExecutor)browser).ExecuteScript("arguments[0].scrollIntoView();", browser.FindElement(linkAllTrecksArtist));
+            browser.FindElement(linkAllTrecksArtist).Click();
+
+
+            // что то с задержками или перекрытием и всех 3-х
+            By linkTrackName = By.ClassName("d-track__name");
+            List<IWebElement> allTrackArtict = browser.FindElements(linkTrackName).ToList();
+
+            By linkTrackLink = By.CssSelector(".d-track__name a");
+            List<IWebElement> allTrackLink = browser.FindElements(linkTrackLink).ToList();
+
+            By txtTrackDuration = By.CssSelector("div.d-track__info.d-track__nohover > span.typo-track.deco-typo-secondary");
+            List<IWebElement> allTrackDuration = browser.FindElements(txtTrackDuration).ToList();
+
+           
+            MessageBox.Show(allTrackArtict[1].GetAttribute("title"));
+            MessageBox.Show(allTrackLink[1].GetAttribute("href"));
+            MessageBox.Show(allTrackDuration[1].Text);
+
         }
 
         /// <summary>
