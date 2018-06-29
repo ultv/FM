@@ -347,20 +347,25 @@ namespace FM
             browser.FindElement(linkAllTrecksArtist).Click();
 
 
-            // что то с задержками или перекрытием и всех 3-х
+            // что то с задержками или перекрытием и всех 3-х или из-за всплывающих окон.
             By linkTrackName = By.ClassName("d-track__name");
-            List<IWebElement> allTrackArtict = browser.FindElements(linkTrackName).ToList();
+            List<IWebElement> allTrack = browser.FindElements(linkTrackName).ToList();
+
+            By txtTrackArtist = By.CssSelector(".d-track__meta a");
+            List<IWebElement> allArtist = browser.FindElements(txtTrackArtist).ToList();
 
             By linkTrackLink = By.CssSelector(".d-track__name a");
-            List<IWebElement> allTrackLink = browser.FindElements(linkTrackLink).ToList();
+            List<IWebElement> allLink = browser.FindElements(linkTrackLink).ToList();
 
             By txtTrackDuration = By.CssSelector("div.d-track__info.d-track__nohover > span.typo-track.deco-typo-secondary");
-            List<IWebElement> allTrackDuration = browser.FindElements(txtTrackDuration).ToList();
+            List<IWebElement> allDuration = browser.FindElements(txtTrackDuration).ToList();
 
-           
-            MessageBox.Show(allTrackArtict[1].GetAttribute("title"));
-            MessageBox.Show(allTrackLink[1].GetAttribute("href"));
-            MessageBox.Show(allTrackDuration[1].Text);
+            CreatePlaylistYandexSound(allArtist, allTrack);
+
+           // MessageBox.Show(allTrackArtict[1].GetAttribute("title"));
+           // MessageBox.Show(allTrackArtist[1].GetAttribute("title"));
+          //  MessageBox.Show(allTrackLink[1].GetAttribute("href"));
+          //  MessageBox.Show(allTrackDuration[1].Text);
 
         }
 
@@ -567,6 +572,165 @@ namespace FM
             }            
         
         }
+
+
+        private void CreatePlaylistYandexSound(List<IWebElement> listArtist, List<IWebElement> listTrack)
+        {
+            /*
+            if (textBoxArtist.Text != "Исполнитель")
+            {
+                FindAtrtist(textBoxArtist.Text);
+            }
+            */
+
+            /*
+            for (int i = 0; i < catalogCategoryYS.Count; i++)
+            {
+                if (catalogCategoryYS[i].Text == comboBoxCategoryMood.Text)
+                {
+                    browser.Navigate().GoToUrl(catalogCategoryYS[i].GetAttribute("href"));
+                    break;
+                }
+            }
+
+            List<IWebElement> catalogIconPlayYS = browser.FindElements(By.CssSelector(".d-track__cover img")).ToList();
+            List<IWebElement> catalogTrackArtistYS = browser.FindElements(By.CssSelector(".d-track__artists a")).ToList();
+            catalogTrackNameYS = browser.FindElements(By.CssSelector(".d-track__name a")).ToList();
+            //List<IWebElement> catalogTrackDurationYS = browser.FindElements().ToList();
+            */
+
+
+            //List<IWebElement> catalogIconPlayYS = browser.FindElements(By.CssSelector(".d-track__cover img")).ToList();
+            List<IWebElement> catalogTrackArtistYS = listArtist;
+            List<IWebElement>  catalogTrackNameYS = listTrack;
+
+            int distanceTop = 40;
+            int distanceElement = 20;
+            int leftLabelNum = 20;
+            int leftCheckBoxSelectTrack = 40;
+
+            int leftButtonPlay = 80;
+            int leftLabelArtist = 150;
+            int leftLabelTrack = 250;
+
+            int leftButtonFindFormat = 520;
+            int leftComboBoxFormats = 640;
+            int leftButtonDownload = 760;
+
+
+
+
+            for (int i = 0; i < catalogTrackNameYS.Count; i++)
+            {
+
+                Label labelNum = new Label();
+                labelNum.Width = leftLabelNum;
+                labelNum.Left = 10;
+                labelNum.Top = 10 + i * distanceTop;
+                labelNum.Text = (i + 1).ToString() + ".";
+                panelPlayList.Controls.Add(labelNum);
+
+                Button buttonPlay = new Button();
+                buttonPlay.Name = i.ToString();
+                buttonPlay.Width = 40;
+                buttonPlay.Left = leftButtonPlay;
+                buttonPlay.Top = 10 + i * distanceTop;
+                buttonPlay.Text = ">";
+                //buttonPlay.Click += ;
+                panelPlayList.Controls.Add(buttonPlay);
+
+                Label labelArtist = new Label();
+                labelArtist.Left = leftLabelArtist;
+                labelArtist.Top = 10 + i * distanceTop;
+                //labelArtist.Text = catalogTrackArtistYS[i].Text;
+                labelArtist.Text = catalogTrackArtistYS[i].GetAttribute("title");
+                panelPlayList.Controls.Add(labelArtist);
+
+                Label labelTrack = new Label();
+                labelTrack.Left = leftLabelTrack;
+                labelTrack.Top = 10 + i * distanceTop;
+                //labelTrack.Text = catalogTrackNameYS[i].Text;
+                labelTrack.Text = catalogTrackNameYS[i].GetAttribute("text");
+                panelPlayList.Controls.Add(labelTrack);
+
+
+
+                /*
+                Button buttonDownloadMP4 = new Button();
+                buttonDownloadMP4.Name = i.ToString();
+                buttonDownloadMP4.Width = 40;
+                buttonDownloadMP4.Left = 300;
+                buttonDownloadMP4.Top = 10 + i * distanceTop;
+                buttonDownloadMP4.Text = "MP4";
+                buttonDownloadMP4.Click += buttonDownload_ClickYS;
+                panelPlayList.Controls.Add(buttonDownloadMP4);
+
+                Button buttonDownload3GP = new Button();
+                buttonDownload3GP.Name = i.ToString();
+                buttonDownload3GP.Width = 40;
+                buttonDownload3GP.Left = 350;
+                buttonDownload3GP.Top = 10 + i * distanceTop;
+                buttonDownload3GP.Text = "3GP";
+                buttonDownload3GP.Click += buttonDownload_ClickYS;
+                panelPlayList.Controls.Add(buttonDownload3GP);
+
+                Button buttonDownloadMP3 = new Button();
+                buttonDownloadMP3.Name = i.ToString();
+                buttonDownloadMP3.Width = 40;
+                buttonDownloadMP3.Left = 400;
+                buttonDownloadMP3.Top = 10 + i * distanceTop;
+                buttonDownloadMP3.Text = "MP3";
+                buttonDownloadMP3.Click += buttonDownload_ClickYS;
+                panelPlayList.Controls.Add(buttonDownloadMP3);
+                */
+
+                /*
+                Button buttonAddedForPlayList = new Button();
+                buttonAddedForPlayList.Width = 100;
+                buttonAddedForPlayList.Left = leftButtonAddedForPlayList;
+                buttonAddedForPlayList.Top = 10 + i * distanceTop;
+                buttonAddedForPlayList.Text = "в Плейлист";
+                panelPlayList.Controls.Add(buttonAddedForPlayList);
+                buttonAddedForPlayList.Enabled = false;
+                */
+
+                CheckBox checkBoxSelectTrack = new CheckBox();
+                checkBoxSelectTrack.Left = leftCheckBoxSelectTrack;
+                checkBoxSelectTrack.Top = 10 + i * distanceTop;
+                panelPlayList.Controls.Add(checkBoxSelectTrack);
+
+                Button buttonFindFormat = new Button();
+                buttonFindFormat.Name = i.ToString();
+                buttonFindFormat.Width = 100;
+                buttonFindFormat.Left = leftButtonFindFormat;
+                buttonFindFormat.Top = 10 + i * distanceTop;
+                buttonFindFormat.Text = "Запросить";
+                panelPlayList.Controls.Add(buttonFindFormat);
+                buttonFindFormat.Click += buttonFindFormat_Click;
+                buttonFindFormat.Enabled = true;
+
+                ComboBox comboBox = new ComboBox();
+                comboBox.Name = "comboBoxFindFormat_" + i.ToString();
+                comboBox.Width = 100;
+                comboBox.Left = leftComboBoxFormats;
+                comboBox.Top = 10 + i * distanceTop;
+                panelPlayList.Controls.Add(comboBox);
+                comboBox.Enabled = false;
+
+                Button buttonDownload = new Button();
+                buttonDownload.Name = i.ToString();
+                buttonDownload.Width = 100;
+                buttonDownload.Left = leftButtonDownload;
+                buttonDownload.Top = 10 + i * distanceTop;
+                buttonDownload.Text = "Скачать";
+                panelPlayList.Controls.Add(buttonDownload);
+                buttonDownload.Click += buttonDownload_Click;
+                buttonDownload.Enabled = false;
+
+            }
+
+        }
+
 
         private void CreatePlaylistMuzoFon()
         {
