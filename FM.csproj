@@ -59,6 +59,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="pages\PageHomeMuzoFon.cs" />
     <Compile Include="pages\PageHomeSaveFromNet.cs" />
     <Compile Include="pages\PageHomeSaveFromNetBuilder.cs" />
     <Compile Include="Program.cs" />

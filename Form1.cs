@@ -67,6 +67,9 @@ namespace FM
         //By BtnShowAll = By.CssSelector("body > div.container > div.content > div.module-popular > ul");
         By elTrackInfo = By.CssSelector("div.span.desktop > div > ul > li");
 
+
+        // поиск по артист
+
         
 
 
@@ -96,7 +99,7 @@ namespace FM
             }
             else
             {
-                SelectMuzoFon();
+               // SelectMuzoFon();
             }
 
             this.Activate();
@@ -322,12 +325,23 @@ namespace FM
             }
             else
             {
-                CreatePlaylistMuzoFon();
+                FindAtrtistMF(textBoxArtist.Text);
+                //CreatePlaylistMuzoFon();
                  buttonCreatePlaylist.Enabled = false;
             }
 
         }
 
+        private void FindAtrtistMF(string artist)
+        {
+            PageHomeMuzoFon pageHomeMF = new PageHomeMuzoFon(browser);
+            pageHomeMF.InputSearch.SendKeys(artist);
+            pageHomeMF.ButtonSearch.Click();
+
+            catalogCategoryMF = browser.FindElements(LinkCatalogSportMusic).ToList();
+
+            CreatePlaylistMuzoFon();
+        }
 
         /// <summary>
         /// Поиск по критерию "Исполнитель".
@@ -382,7 +396,7 @@ namespace FM
             else
             {
                 CreatePlaylistMuzoFon();
-                buttonCreatePlaylist.Enabled = false;
+                buttonCreatePlaylist.Enabled = true;
             }
         }
 
@@ -731,9 +745,48 @@ namespace FM
 
         }
 
+        /// <summary>
+        /// Преобразование длитеьности из строки в int. 
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        private int TimeStringToInt(string time)
+        {
+            /*
+            int m = Convert.ToInt32(time[0]);
+
+            int minutes = Convert.ToInt32(time[0]) * 600 + Convert.ToInt32(time[1]) * 60;
+            int secuds = Convert.ToInt32(time[3]) * 10 + Convert.ToInt32(time[4]);
+            */
+
+            /*
+
+            string minDec = time.Substring(0, time.Length -4);
+            string minEd = time.Substring(0, time.Length - 3);
+            minEd = time.Remove(0,1);
+
+            string secDec = time.Substring(0, time.Length - 1);
+            secDec = time.Remove(0, 3);            
+
+            string secEd = time.Remove(0, 4);           
+
+            int minutes = Int32.Parse(minDec) * 600 + Int32.Parse(minEd) *60;
+            int secunds = Int32.Parse(secDec) * 10 + Int32.Parse(secEd);
+            */
+
+
+            int minDec = Int32.Parse(time[0].ToString()) * 600;
+            int minEd = Int32.Parse(time[1].ToString()) * 60;
+            int secDec = Int32.Parse(time[3].ToString()) * 10;
+            int secEd = Int32.Parse(time[4].ToString());
+
+            return minDec + minEd + secDec + secEd;
+        }
+
 
         private void CreatePlaylistMuzoFon()
         {
+            /*
             for (int i = 0; i < catalogCategoryMF.Count; i++)
             {
                 if (catalogCategoryMF[i].Text == comboBoxCategoryMood.Text)
@@ -742,7 +795,7 @@ namespace FM
                     break;
                 }
             }
-
+            */
 
             catalogIconPlay = browser.FindElements(IconPlay).ToList();
             catalogIconDownload = browser.FindElements(IconDownload).ToList();
@@ -756,43 +809,48 @@ namespace FM
             for (int i = 0; i < catalogTrackArtist.Count; i++)
             {
 
-                Label labelNum = new Label();
-                labelNum.Width = 20;
-                labelNum.Left = 10;
-                labelNum.Top = 10 + i * distanceTop;
-                labelNum.Text = (i + 1).ToString() + ".";
-                panelPlayList.Controls.Add(labelNum);
-
-                Label labelArtist = new Label();
-                labelArtist.Left = 30;
-                labelArtist.Top = 10 + i * distanceTop;
-                labelArtist.Text = catalogTrackArtist[i].Text;
-                panelPlayList.Controls.Add(labelArtist);
-
-                LinkLabel labelName = new LinkLabel();
-                labelName.Left = 200;
-                labelName.Top = 10 + i * distanceTop;
-                labelName.Text = catalogTrackName[i].Text;
-                labelName.LinkClicked += linkLabelName_LinkClicked;
-                panelPlayList.Controls.Add(labelName);
-
-                Button buttonDownload = new Button();
-                buttonDownload.Name = i.ToString();
-                buttonDownload.Left = 400;
-                buttonDownload.Top = 10 + i * distanceTop;
-                buttonDownload.Text = "Скачать";
-                buttonDownload.Click += buttonDownload_Click;
-                panelPlayList.Controls.Add(buttonDownload);
-
-                Button buttonAddedForPlayList = new Button();
-                buttonAddedForPlayList.Width = 200;
-                buttonAddedForPlayList.Left = 500;
-                buttonAddedForPlayList.Top = 10 + i * distanceTop;
-                buttonAddedForPlayList.Text = "Добавить в Плейлист";
-                panelPlayList.Controls.Add(buttonAddedForPlayList);
-                buttonAddedForPlayList.Enabled = false;
+                if (TimeStringToInt(catalogTrackDuration[i].Text) < 241)
+                {
 
 
+
+                    Label labelNum = new Label();
+                    labelNum.Width = 20;
+                    labelNum.Left = 10;
+                    labelNum.Top = 10 + i * distanceTop;
+                    labelNum.Text = (i + 1).ToString() + ".";
+                    panelPlayList.Controls.Add(labelNum);
+
+                    Label labelArtist = new Label();
+                    labelArtist.Left = 30;
+                    labelArtist.Top = 10 + i * distanceTop;
+                    labelArtist.Text = catalogTrackArtist[i].Text;
+                    panelPlayList.Controls.Add(labelArtist);
+
+                    LinkLabel labelName = new LinkLabel();
+                    labelName.Left = 200;
+                    labelName.Top = 10 + i * distanceTop;
+                    labelName.Text = catalogTrackName[i].Text;
+                    labelName.LinkClicked += linkLabelName_LinkClicked;
+                    panelPlayList.Controls.Add(labelName);
+
+                    Button buttonDownload = new Button();
+                    buttonDownload.Name = i.ToString();
+                    buttonDownload.Left = 400;
+                    buttonDownload.Top = 10 + i * distanceTop;
+                    buttonDownload.Text = "Скачать";
+                    buttonDownload.Click += buttonDownload_Click;
+                    panelPlayList.Controls.Add(buttonDownload);
+
+                    Button buttonAddedForPlayList = new Button();
+                    buttonAddedForPlayList.Width = 200;
+                    buttonAddedForPlayList.Left = 500;
+                    buttonAddedForPlayList.Top = 10 + i * distanceTop;
+                    buttonAddedForPlayList.Text = "Добавить в Плейлист";
+                    panelPlayList.Controls.Add(buttonAddedForPlayList);
+                    buttonAddedForPlayList.Enabled = false;
+
+                }
             }
         }
 
@@ -838,7 +896,7 @@ namespace FM
             comboBoxCategoryMood.Items.Clear();
             comboBoxCategoryMood.Text = "";
             comboBoxCategoryMood.Enabled = false;
-            buttonCreatePlaylist.Enabled = false;         
+            buttonCreatePlaylist.Enabled = true;         
         }
 
         private void comboBoxCategorySound_SelectedIndexChanged(object sender, EventArgs e)
