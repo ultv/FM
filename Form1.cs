@@ -1,6 +1,4 @@
 ﻿using System;
-
-
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -77,41 +75,18 @@ namespace FM
         public Form1()
         {
             InitializeComponent();
-      //      SearchTrack();
+            SearchTrack();
         }
 
-        /// <summary>
-        /// К УДАЛЕНИЮ
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void buttonSearch_Click(object sender, EventArgs e)
-        {
-            comboBoxCategorySound.Text = "";
-            comboBoxCategorySound.Items.Clear();
-
-            OpenBrowser(url);
-
-            if(radioButtonYandexSound.Checked)
-            {
-                SelectYandexSound();
-            }
-            else
-            {
-                SelectMuzoFon();
-            }
-                                    
-            this.Activate();
-            browser.Manage().Window.Minimize();
-        }
+        
 
         /// <summary>
         /// Вывод треков.
         /// </summary>
         public void SearchTrack()
         {
-            comboBoxCategorySound.Text = "";
-            comboBoxCategorySound.Items.Clear();
+            comboBoxCategoryMood.Text = "";
+            comboBoxCategoryMood.Items.Clear();
 
             OpenBrowser(url);
 
@@ -133,51 +108,18 @@ namespace FM
         /// </summary>
         private void SelectYandexSound()
         {
-            //((IJavaScriptExecutor)browser).ExecuteScript("arguments[0].scrollIntoView();", browser.FindElement(LinkRun));
-            //browser.FindElement(LinkRun).Click();
 
-            //((IJavaScriptExecutor)browser).ExecuteScript("arguments[0].scrollIntoView();", browser.FindElement(LinkAllTrack));
-            //browser.FindElement(LinkAllTrack).Click();
-
-            ////WebDriverWait browserWait = new WebDriverWait(browser, TimeSpan.FromSeconds(15));
-            ////IWebElement LinkTrackNameWait = browserWait.Until(ExpectedConditions.ElementIsVisible(LinkTrackName));
-
-            /*
-            List<IWebElement> catalogTrack = browser.FindElements(LinkTrackName).ToList();
-            List<IWebElement> catalogTrackDuration = browser.FindElements(TxtTrackDuration).ToList();
-
-            if (catalogTrack.Count > 0)
-            {
-                foreach (IWebElement element in catalogTrack)
-                {
-                    richTextBoxCatalogTrack.AppendText(element.Text + "\n");
-                    richTextBoxCatalogTrack.AppendText(element.GetAttribute("href") + "\n");
-                    richTextBoxCatalogTrack.AppendText("\n");
-                }
-            }
-
-            if (catalogTrackDuration.Count > 0)
-            {
-                foreach (IWebElement element in catalogTrackDuration)
-                {
-                    richTextBoxTrackDuration.AppendText(element.Text + "\n");
-                    richTextBoxTrackDuration.AppendText("\n");
-                }
-            }
-            */
-
-            
-
-            catalogCategoryYS = browser.FindElements(By.CssSelector(".page-main__metatags-line a")).ToList();            
+            By linkMood = By.CssSelector(".page-main__metatags-children li");
+            catalogCategoryYS = browser.FindElements(linkMood).ToList();
+            //catalogCategoryYS = browser.FindElements(By.CssSelector(".page-main__metatags-line a")).ToList();            
 
             foreach (IWebElement element in catalogCategoryYS)
             {
-                comboBoxCategorySound.Items.Add(element.Text);
+                comboBoxCategoryMood.Items.Add(element.Text);
             }
 
-            comboBoxCategorySound.Text = catalogCategoryYS[0].Text;
-            comboBoxCategorySound.Enabled = true;
-            buttonSearch.Enabled = false;
+            comboBoxCategoryMood.Text = catalogCategoryYS[0].Text;
+            comboBoxCategoryMood.Enabled = true;           
             buttonCreatePlaylist.Enabled = true;
 
 
@@ -188,21 +130,19 @@ namespace FM
         /// </summary>
         private void SelectMuzoFon()
         {            
-
-            browser.FindElement(LinkSportMusic).Click();
-           
+            
+            browser.FindElement(LinkSportMusic).Click();            
             catalogCategoryMF = browser.FindElements(LinkCatalogSportMusic).ToList();
 
             //comboBoxCategorySound.DataSource = catalogCategory; 
 
-            foreach(IWebElement element in catalogCategoryMF)
+            foreach (IWebElement element in catalogCategoryMF)
             {
-                comboBoxCategorySound.Items.Add(element.Text);
+                comboBoxCategoryMood.Items.Add(element.Text);
             }
 
-            comboBoxCategorySound.Text = catalogCategoryMF[0].Text;
-            comboBoxCategorySound.Enabled = true;
-            buttonSearch.Enabled = false;
+            comboBoxCategoryMood.Text = catalogCategoryMF[0].Text;
+            comboBoxCategoryMood.Enabled = true;           
             buttonCreatePlaylist.Enabled = true;
 
         }
@@ -376,7 +316,8 @@ namespace FM
         {
             if (radioButtonYandexSound.Checked)
             {
-                CreatePlaylistYandexSound();
+                FindAtrtist(textBoxArtist.Text);
+                //       CreatePlaylistYandexSound();
                 buttonCreatePlaylist.Enabled = false;
             }
             else
@@ -385,6 +326,28 @@ namespace FM
                  buttonCreatePlaylist.Enabled = false;
             }
 
+        }
+
+
+        /// <summary>
+        /// Поиск по критерию "Исполнитель".
+        /// </summary>
+        /// <param name="artist"></param>
+        private void FindAtrtist(string artist)
+        {
+            By inputArtistSearch = By.CssSelector(".head__search input");
+            browser.FindElement(inputArtistSearch).SendKeys(artist + OpenQA.Selenium.Keys.Enter);
+
+            By iconArtistSearch = By.CssSelector(".d-suggest button");
+            browser.FindElement(iconArtistSearch).Click();
+
+            //By linkAllTrecksArtist = By.LinkText("Все треки");
+            //By linkAllTrecksArtist = By.CssSelector("body > div.page-root.page-root_no-player > div.centerblock-wrapper > div.centerblock > div > div > div.page-search__switch > nav > a:nth-child(4)");
+            //browser.FindElement(linkAllTrecksArtist).Click();
+            //By linkArtistName = By.CssSelector(".artist__name a");
+            //browser.FindElement(linkArtistName).Click();
+
+            By linkArtistTracks = By.LinkText("Треки");
         }
 
         /// <summary>
@@ -445,9 +408,15 @@ namespace FM
 
         private void CreatePlaylistYandexSound()
         {
+            if (textBoxArtist.Text != "Исполнитель")
+            {
+                FindAtrtist(textBoxArtist.Text);
+            }
+
+            
             for (int i = 0; i < catalogCategoryYS.Count; i++)
             {
-                if (catalogCategoryYS[i].Text == comboBoxCategorySound.Text)
+                if (catalogCategoryYS[i].Text == comboBoxCategoryMood.Text)
                 {
                     browser.Navigate().GoToUrl(catalogCategoryYS[i].GetAttribute("href"));
                     break;
@@ -463,10 +432,12 @@ namespace FM
             int distanceTop = 40;
             int distanceElement = 20;
             int leftLabelNum = 20;
-            int leftButtonPlay = 40;
+            int leftCheckBoxSelectTrack = 40;
+
+            int leftButtonPlay = 80;
             int leftLabelArtist = 150;            
             int leftLabelTrack = 250;
-            int leftButtonAddedForPlayList = 400;
+            
             int leftButtonFindFormat = 520;
             int leftComboBoxFormats = 640;
             int leftButtonDownload = 760;
@@ -486,10 +457,10 @@ namespace FM
 
                 Button buttonPlay = new Button();
                 buttonPlay.Name = i.ToString();
-                buttonPlay.Width = 80;
+                buttonPlay.Width = 40;
                 buttonPlay.Left = leftButtonPlay;
                 buttonPlay.Top = 10 + i * distanceTop;
-                buttonPlay.Text = "Слушать";
+                buttonPlay.Text = ">";
                 //buttonPlay.Click += ;
                 panelPlayList.Controls.Add(buttonPlay);
 
@@ -505,7 +476,7 @@ namespace FM
                 labelTrack.Text = catalogTrackNameYS[i].Text;               
                 panelPlayList.Controls.Add(labelTrack);
 
-                
+
 
                 /*
                 Button buttonDownloadMP4 = new Button();
@@ -536,7 +507,7 @@ namespace FM
                 panelPlayList.Controls.Add(buttonDownloadMP3);
                 */
 
-
+                /*
                 Button buttonAddedForPlayList = new Button();
                 buttonAddedForPlayList.Width = 100;
                 buttonAddedForPlayList.Left = leftButtonAddedForPlayList;
@@ -544,6 +515,12 @@ namespace FM
                 buttonAddedForPlayList.Text = "в Плейлист";
                 panelPlayList.Controls.Add(buttonAddedForPlayList);
                 buttonAddedForPlayList.Enabled = false;
+                */
+
+                CheckBox checkBoxSelectTrack = new CheckBox();
+                checkBoxSelectTrack.Left = leftCheckBoxSelectTrack;
+                checkBoxSelectTrack.Top = 10 + i * distanceTop;
+                panelPlayList.Controls.Add(checkBoxSelectTrack);
 
                 Button buttonFindFormat = new Button();
                 buttonFindFormat.Name = i.ToString();
@@ -574,14 +551,14 @@ namespace FM
                 buttonDownload.Enabled = false;
 
             }            
-
+        
         }
 
         private void CreatePlaylistMuzoFon()
         {
             for (int i = 0; i < catalogCategoryMF.Count; i++)
             {
-                if (catalogCategoryMF[i].Text == comboBoxCategorySound.Text)
+                if (catalogCategoryMF[i].Text == comboBoxCategoryMood.Text)
                 {
                     browser.Navigate().GoToUrl(catalogCategoryMF[i].GetAttribute("href"));
                     break;
@@ -680,11 +657,10 @@ namespace FM
         private void ElementInit()
         {
             panelPlayList.Controls.Clear();
-            comboBoxCategorySound.Items.Clear();
-            comboBoxCategorySound.Text = "";
-            comboBoxCategorySound.Enabled = false;
-            buttonCreatePlaylist.Enabled = false;
-            buttonSearch.Enabled = true;
+            comboBoxCategoryMood.Items.Clear();
+            comboBoxCategoryMood.Text = "";
+            comboBoxCategoryMood.Enabled = false;
+            buttonCreatePlaylist.Enabled = false;         
         }
 
         private void comboBoxCategorySound_SelectedIndexChanged(object sender, EventArgs e)
@@ -692,7 +668,8 @@ namespace FM
             ////!!!! перейти на url по comboBox.Text;
             panelPlayList.Controls.Clear();
             //buttonCreatePlaylist.Enabled = true;
-            SearchTrack();
+            //SearchTrack();
+           // ShowTracks();
         }
     }
 }
